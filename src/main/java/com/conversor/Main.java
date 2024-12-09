@@ -25,27 +25,58 @@ public class Main {
             // Filtrar las monedas
             Map<String, Double> filteredRates = HttpClientExample.filterCurrencies(exchangeRates, currenciesToFilter);
 
-            // Mostrar las tasas de cambio filtradas
-            System.out.println("Tasas de cambio disponibles:");
-            filteredRates.forEach((currency, rate) ->
-                    System.out.println(currency + ": " + rate));
-
-            // Solicitar al usuario datos para la conversión
+            // Configurar el menú interactivo
             Scanner scanner = new Scanner(System.in);
+            boolean running = true;
 
-            System.out.print("\nIngresa la moneda de origen (ej. USD): ");
-            String fromCurrency = scanner.nextLine().toUpperCase();
+            while (running) {
+                System.out.println("\n--- Conversor de Monedas ---");
+                System.out.println("1. Mostrar tasas de cambio disponibles");
+                System.out.println("2. Realizar conversión de monedas");
+                System.out.println("3. Salir");
+                System.out.print("Selecciona una opción: ");
+                int option = scanner.nextInt();
+                scanner.nextLine(); // Consumir la nueva línea
 
-            System.out.print("Ingresa la moneda de destino (ej. ARS): ");
-            String toCurrency = scanner.nextLine().toUpperCase();
+                switch (option) {
+                    case 1:
+                        // Mostrar las tasas de cambio
+                        System.out.println("\nTasas de cambio disponibles:");
+                        filteredRates.forEach((currency, rate) ->
+                                System.out.println(currency + ": " + rate));
+                        break;
 
-            System.out.print("Ingresa el monto a convertir: ");
-            double amount = scanner.nextDouble();
+                    case 2:
+                        // Solicitar datos para la conversión
+                        System.out.print("Ingresa la moneda de origen (ej. USD): ");
+                        String fromCurrency = scanner.nextLine().toUpperCase();
 
-            // Realizar la conversión
-            double convertedAmount = CurrencyConverter.convert(filteredRates, fromCurrency, toCurrency, amount);
+                        System.out.print("Ingresa la moneda de destino (ej. ARS): ");
+                        String toCurrency = scanner.nextLine().toUpperCase();
 
-            System.out.printf("Monto convertido: %.2f %s\n", convertedAmount, toCurrency);
+                        System.out.print("Ingresa el monto a convertir: ");
+                        double amount = scanner.nextDouble();
+
+                        // Realizar la conversión
+                        try {
+                            double convertedAmount = CurrencyConverter.convert(filteredRates, fromCurrency, toCurrency, amount);
+                            System.out.printf("Monto convertido: %.2f %s\n", convertedAmount, toCurrency);
+                        } catch (IllegalArgumentException e) {
+                            System.err.println("Error: " + e.getMessage());
+                        }
+                        break;
+
+                    case 3:
+                        // Salir del programa
+                        System.out.println("¡Gracias por usar el conversor de monedas! Hasta pronto.");
+                        running = false;
+                        break;
+
+                    default:
+                        System.out.println("Opción no válida. Por favor, selecciona una opción del menú.");
+                        break;
+                }
+            }
 
         } catch (RuntimeException e) {
             System.err.println("Error: " + e.getMessage());
